@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Sigma Mail</title>
 </head>
 <body>
-<p>You're a sigma</p>
+<h1>Login</h1>
+<form method="POST" th:action="@{/mailbox}" th:object="${user}">
+Username: <input th:field="*{username}" type="text" name="username" placeholder="Enter your username">
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: #fc0e0e;"></span>
+    <br><br>
+Password: <input th:field="*{password}" type="password" name="password" placeholder="Enter your password">
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: #fc0e0e;"></span>
+    <br><br>
+    <button type="submit">Login</button>
+</form>
 </body>
 </html>

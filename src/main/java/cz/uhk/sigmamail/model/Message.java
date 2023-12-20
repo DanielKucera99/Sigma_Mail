@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="message")
@@ -15,11 +16,11 @@ public class Message {
     @Column(name = "id")
     private int id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "sender", nullable = false)
     private User sender;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "receiver", nullable = false)
     private User receiver;
 
@@ -38,17 +39,15 @@ public class Message {
     @Column(name = "time")
     private Date time;
 
-    @ManyToOne
-    @JoinColumn(name="category", nullable = false)
-    private Category category;
+    @ManyToMany
+    @JoinTable(
+            name="message_category",
+            joinColumns = @JoinColumn(name="message"),
+            inverseJoinColumns = @JoinColumn(name="category")
+    )
+    private Set<Category> categories;
 
-    public Category getCategory() {
-        return category;
-    }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
 
     public int getId() {
         return id;
@@ -106,6 +105,13 @@ public class Message {
         this.attachments = attachments;
     }
 
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
 
     @Override
     public String toString() {
@@ -117,7 +123,7 @@ public class Message {
                 ", text='" + text + '\'' +
                 ", attachments=" + attachments +
                 ", time=" + time +
-                ", category=" + category +
+                ", categories=" + categories +
                 '}';
     }
 }

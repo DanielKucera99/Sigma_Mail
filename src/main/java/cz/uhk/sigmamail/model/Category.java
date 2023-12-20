@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="category")
@@ -20,8 +21,8 @@ public class Category {
     @Column(name="name")
     private String name;
 
-    @OneToMany(mappedBy="category")
-    private List<Message> messages;
+    @ManyToMany(mappedBy = "categories")
+    private Set<Message> messages;
 
     public int getId() {
         return id;
@@ -39,20 +40,13 @@ public class Category {
         this.name = name;
     }
 
-    public List<Message> getMessages() {
-        return messages;
-    }
 
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
-    }
 
     @Override
     public String toString() {
         return "Category{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", messages=" + messages +
                 '}';
     }
 }

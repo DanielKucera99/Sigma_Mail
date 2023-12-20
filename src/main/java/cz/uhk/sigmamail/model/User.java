@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -43,6 +44,9 @@ public class User {
     @Size(min = 1, message = "Required")
     @Column(name = "role")
     private String role;
+
+    @OneToMany(mappedBy = "sender")
+    private List<Message> messages;
 
     public String getRole() {
         return role;
