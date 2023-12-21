@@ -32,6 +32,20 @@ public class Attachment {
     @Column(name="size")
     private int size;
 
+    @Lob
+    @Column(name = "content", columnDefinition = "BLOB")
+    private byte[] content;
+
+    // other getters and setters...
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
+
     public String getName() {
         return name;
     }

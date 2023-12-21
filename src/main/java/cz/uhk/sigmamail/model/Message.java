@@ -2,6 +2,7 @@ package cz.uhk.sigmamail.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Message {
     @OneToMany(mappedBy = "message")
     private List<Attachment> attachments;
 
-    @NotNull(message = "Required")
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time")
     private Date time;
