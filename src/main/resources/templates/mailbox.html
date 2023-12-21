@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mailbox</title>
+</head>
+<body>
+<p>Logged user:<span th:text="${user.username}"></span></p>
+
+<ul>
+    <li th:each="category : ${categories}">
+        <a th:href="@{/mailbox/{categoryId}(categoryId=${category.id})}">
+        <span th:text="${category.name}"></span>
+        </a>
+    </li>
+</ul>
+
+    <a th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>{message.subject}</title>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+<body>
+<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Sender: <span th:text="${sender.username}"></span></p>
+<p>Receiver: <span th:text="${receiver.username}"></span></p>
+<p>Subject: <span th:text="${message.subject}"></span></p>
+<p>Text: <span th:text="${message.text}"></span></p>
+<p>Time: <span th:text="${message.time}"></span></p>
+
+<button onclick="goBack()">Go Back</button>
+</body>
+</html>

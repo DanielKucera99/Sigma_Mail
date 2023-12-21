@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${category.name}"></title>
+</head>
+<body>
+<p>Logged user:<span th:text="${user.username}"></span></p>
+
+<ul>
+    <li th:each="category : ${categories}">
+        <a th:href="@{/mailbox/{categoryId}(categoryId=${category.id})}">
+            <span th:text="${category.name}"></span>
+        </a>
+    </li>
+
+</ul>
+
+
+<ul>
+    <li th:each="message : ${messages}">
+        <a th:href="@{/mailbox/{categoryId}/{messageId}(categoryId=${category.id},messageId=${message.id})}">
+        <span th:text="${message.subject}"></span>
+        </a>
+    </li>
+</ul>
+
+
+</body>
+</html>
