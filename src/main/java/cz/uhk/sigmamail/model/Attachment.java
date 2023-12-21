@@ -18,17 +18,14 @@ public class Attachment {
     private Message message;
 
     @NotNull(message="Required")
-    @Size(min=1)
     @Column(name="name")
     private String name;
 
     @NotNull(message="Required")
-    @Size(min=1)
     @Column(name="type")
     private String type;
 
     @NotNull(message="Required")
-    @Size(min=1)
     @Column(name="size")
     private int size;
 

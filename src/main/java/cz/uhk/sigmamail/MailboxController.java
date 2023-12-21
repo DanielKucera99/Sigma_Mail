@@ -22,6 +22,7 @@ public class MailboxController {
     private Message_CategoryDAO message_categoryDAO;
     private MessageDAO messageDAO;
 
+
     public MailboxController(CategoryDAO categoryDAO, UserDAO userDAO,Message_CategoryDAO message_categoryDAO, MessageDAO messageDAO){
         this.categoryDAO=categoryDAO;
         this.userDAO=userDAO;
@@ -31,7 +32,7 @@ public class MailboxController {
 
     @PostMapping("/mailbox")
     public String getMailbox(Model model){
-        int userid = 2;
+        int userid = 1;
         User user = userDAO.getUserById(userid);
         List<Category> categories = categoryDAO.getAllCategories();
         model.addAttribute("user",user);
@@ -42,7 +43,7 @@ public class MailboxController {
 
     @GetMapping("/mailbox/{categoryId}")
     public String getCategoryPage(@PathVariable int categoryId, Model model){
-        int userid = 2;
+        int userid = 1;
         User user = userDAO.getUserById(userid);
         List<Category> categories = categoryDAO.getAllCategories();
         Category category = categoryDAO.getCategoryById(categoryId);
@@ -63,8 +64,9 @@ public class MailboxController {
 
     @GetMapping("/mailbox/{categoryId}/{messageId}")
     public String getMessagePage(@PathVariable int categoryId,@PathVariable int messageId,Model model){
-        int userid=2;
+        int userid=1;
         User user = userDAO.getUserById(userid);
+        Category category = categoryDAO.getCategoryById(categoryId);
         Message message = messageDAO.getMessageById(messageId);
         User sender = userDAO.getUserById(message.getSender().getId());
         User receiver = userDAO.getUserById(message.getReceiver().getId());
@@ -72,13 +74,14 @@ public class MailboxController {
         model.addAttribute("message", message);
         model.addAttribute("sender",sender);
         model.addAttribute("receiver", receiver);
+        model.addAttribute("category", category);
 
         return "message";
     }
 
     @GetMapping("/mailbox/new-message")
     public String getNewMessagePage(Model model){
-        int userid=2;
+        int userid=1;
         User sender = userDAO.getUserById(userid);
         Message message = new Message();
 
@@ -88,32 +91,44 @@ public class MailboxController {
         return "new-message";
     }
 
-    @PostMapping("/mailbox/new-message")
+    @PostMapping("/mailbox/new-message/send")
     public String sendNewMessage(HttpServletRequest request){
-        int userid=2;
+        int userid=1;
         User sender = userDAO.getUserById(userid);
+
         String receiverUsername = request.getParameter("receiver");
-        System.out.println("receiver name: " + receiverUsername);
         String subject = request.getParameter("subject");
-        System.out.println("subject name: " + subject);
         String text = request.getParameter("text");
         List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
-        System.out.println("attachment: " + attachmentFiles.getFirst().getOriginalFilename());
         List<Attachment> attachments = processAttachments(attachmentFiles);
-        System.out.println("true attachment: " + attachments.getFirst().getName());
-
 
         User receiver = userDAO.getUserByUserame(receiverUsername);
-        System.out.println("id: " + receiver.getId());
 
         messageDAO.sendMessage(sender, receiver, subject, text, attachments);
+
+        return "redirect:/mailbox";
+    }
+    @PostMapping("/mailbox/new-message/save")
+    public String saveNewMessage(HttpServletRequest request){
+        int userid=1;
+        User sender = userDAO.getUserById(userid);
+
+        String receiverUsername = request.getParameter("receiver");
+        String subject = request.getParameter("subject");
+        String text = request.getParameter("text");
+        List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
+        List<Attachment> attachments = processAttachments(attachmentFiles);
+
+        User receiver = userDAO.getUserByUserame(receiverUsername);
+
+        messageDAO.saveMessage(sender, receiver, subject, text, attachments);
 
         return "redirect:/mailbox";
     }
 
     private List<Attachment> processAttachments(List<MultipartFile> attachments) {
         return attachments.stream()
-                .map(this::convertToAttachment) // Assuming Attachment::new is the correct constructor
+                .map(this::convertToAttachment)
                 .collect(Collectors.toList());
     }
 
@@ -123,15 +138,10 @@ public class MailboxController {
         attachment.setType(file.getContentType());
         attachment.setSize((int) file.getSize());
 
-        // You may want to set the Message association if needed
-        // attachment.setMessage(yourMessageObject);
-
-        // Save the file content to the Attachment if necessary
         try {
             byte [] content = convertMultipartFileToByteArray(file);
             attachment.setContent(content);
         } catch (IOException e) {
-            // Handle exception appropriately
             e.printStackTrace();
         }
 
@@ -144,12 +154,33 @@ public class MailboxController {
 
     @GetMapping("/mailbox")
     public String getMailboxPage(Model model){
-        int userid = 2;
+        int userid = 1;
         User user = userDAO.getUserById(userid);
         List<Category> categories = categoryDAO.getAllCategories();
         model.addAttribute("user",user);
         model.addAttribute("categories", categories);
 
         return "mailbox";
+    }
+
+    @PostMapping("/moveToTrash/{categoryId}/{messageId}")
+    public String moveMessageToTrash(@PathVariable int categoryId,@PathVariable int messageId){
+        Message message = messageDAO.getMessageById(messageId);
+        Category category = categoryDAO.getCategoryById(categoryId);
+        Message_Category currentMessage_Category = message_categoryDAO.getDataByMessageAndCategory(message,category);
+        message_categoryDAO.deleteMessage_Category(currentMessage_Category);
+        messageDAO.associateMessageWithCategory(message,"Trash");
+
+        return "redirect:/mailbox";
+    }
+
+    @PostMapping("/delete/{categoryId}/{messageId}")
+    public String deleteMessage(@PathVariable int categoryId,@PathVariable int messageId){
+        Message message = messageDAO.getMessageById(messageId);
+        Category category = categoryDAO.getCategoryById(categoryId);
+        Message_Category message_category = message_categoryDAO.getDataByMessageAndCategory(message,category);
+        message_categoryDAO.deleteMessage_Category(message_category);
+
+        return "redirect:/mailbox";
     }
 }

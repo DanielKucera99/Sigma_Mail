@@ -5,13 +5,28 @@
     <title>Title</title>
 </head>
 <body>
-<form th:action="@{/mailbox/new-message}" th:object="${message}" method="post" enctype="multipart/form-data">
+<form id="messageForm" th:action="@{/mailbox/new-message}" th:object="${message}" method="post" enctype="multipart/form-data">
     <label>Author: <span th:text="${sender.username}" /></label><br>
     <label>Receiver: <input name="receiver" type="text" th:field="*{receiver}" required></label><br>
     <label>Subject: <input name="subject" type="text" th:field="*{subject}" required></label><br>
     <label>Text: <textarea name="text" th:field="*{text}" required></textarea></label><br>
     <label>Attachment: <input type="file" name="attachments" accept=".pdf, .doc, .docx, .txt, .gif, .jpg, .jpeg, .gif" multiple></label><br>
-    <button type="submit">Submit</button>
+
+    <button type="button" onclick="submitForm('save')">Save as a concept</button>
+
+    <button type="button" onclick="submitForm('send')">Send</button>
 </form>
+
+<script th:inline="javascript">
+    function submitForm(action) {
+        let form = document.getElementById('messageForm');
+        if (action === 'save') {
+            form.action = "/mailbox/new-message/save";
+        } else if (action === 'send') {
+            form.action ="/mailbox/new-message/send";
+        }
+        form.submit();
+    }
+</script>
 </body>
 </html>

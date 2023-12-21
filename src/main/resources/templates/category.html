@@ -13,9 +13,9 @@
             <span th:text="${category.name}"></span>
         </a>
     </li>
-
 </ul>
 
+<a th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
 
 <ul>
     <li th:each="message : ${messages}">
@@ -24,6 +24,7 @@
         </a>
     </li>
 </ul>
+
 
 
 </body>

@@ -11,10 +11,12 @@ import java.util.List;
 @Repository
 public class MessageDAOImpl implements MessageDAO{
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+    private AttachmentDAO attachmentDAO;
 
-    public MessageDAOImpl(EntityManager entityManager){
+    public MessageDAOImpl(EntityManager entityManager, AttachmentDAO attachmentDAO){
         this.entityManager=entityManager;
+        this.attachmentDAO=attachmentDAO;
     }
 
     @Override
@@ -58,26 +60,49 @@ public class MessageDAOImpl implements MessageDAO{
         newMessage.setReceiver(receiver);
         newMessage.setSubject(subject);
         newMessage.setText(text);
+
+        for (Attachment attachment : attachments) {
+            attachment.setMessage(newMessage);
+        }
+
         newMessage.setAttachments(attachments);
         newMessage.setTime(new Date());
 
-        System.out.println("new message sender:" + newMessage.getSender());
-        System.out.println("new message receiver:" + newMessage.getReceiver());
-        System.out.println("new message subject:" + newMessage.getSubject());
-        System.out.println("new message text:" + newMessage.getText());
-        System.out.println("new message attachment:" + newMessage.getAttachments());
-        System.out.println("new message time:" + newMessage.getTime());
         entityManager.persist(newMessage);
 
-        associateMessageWithCategory(newMessage, "Send");
+        for (Attachment attachment : attachments) {
+            entityManager.persist(attachment);
+        }
+
+        associateMessageWithCategory(newMessage, "Sent");
         associateMessageWithCategory(newMessage, "Received");
     }
 
     @Override
-    public void sendMessage(Message message) {
-        entityManager.persist(message);
+    @Transactional
+    public void saveMessage(User sender, User receiver, String subject, String text, List<Attachment> attachments) {
+        Message newMessage = new Message();
+        newMessage.setSender(sender);
+        newMessage.setReceiver(receiver);
+        newMessage.setSubject(subject);
+        newMessage.setText(text);
 
+        for (Attachment attachment : attachments) {
+            attachment.setMessage(newMessage);
+        }
+
+        newMessage.setAttachments(attachments);
+        newMessage.setTime(new Date());
+
+        entityManager.persist(newMessage);
+
+        for (Attachment attachment : attachments) {
+            entityManager.persist(attachment);
+        }
+        associateMessageWithCategory(newMessage, "Concepts");
     }
+
+    @Override
     @Transactional
     public void associateMessageWithCategory(Message message, String categoryName) {
         TypedQuery<Category> categoryQuery = entityManager.createQuery(
@@ -91,6 +116,12 @@ public class MessageDAOImpl implements MessageDAO{
         messageCategory.setCategory(category);
 
         entityManager.persist(messageCategory);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMessage(Message message) {
+        entityManager.remove(message);
     }
 
 

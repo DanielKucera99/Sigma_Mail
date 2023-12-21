@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>{message.subject}</title>
+    <title th:text="${message.subject}"></title>
     <script>
         function goBack() {
             window.history.back();
@@ -16,7 +16,23 @@
 <p>Subject: <span th:text="${message.subject}"></span></p>
 <p>Text: <span th:text="${message.text}"></span></p>
 <p>Time: <span th:text="${message.time}"></span></p>
+<ul>
+    <li th:each="attachment : ${message.attachments}">
+        <a th:href="@{'/download/' + ${attachment.id}}" th:text="${attachment.name}"></a>
+    </li>
+</ul>
 
+<form method="post" th:action="@{/moveToTrash/{categoryId}/{messageId}(categoryId=${category.id},messageId=${message.id})}">
+    <input type="hidden" th:field="*{message.id}" />
+    <input type="hidden" th:field="*{category.id}" />
+    <button type="submit" th:if="${category.name != 'Trash'}">Move to trash</button>
+</form>
+
+<form method="post" th:action="@{/delete/{categoryId}/{messageId}(categoryId=${category.id},messageId=${message.id})}">
+    <input type="hidden" th:field="*{message.id}" />
+    <input type="hidden" th:field="*{category.id}" />
+    <button type="submit" th:if="${category.name == 'Trash'}">Delete</button>
+</form>
 <button onclick="goBack()">Go Back</button>
 </body>
 </html>
