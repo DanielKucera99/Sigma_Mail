@@ -10,9 +10,9 @@
     </script>
 </head>
 <body>
-<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 <p>Sender: <span th:text="${sender.username}"></span></p>
-<p>Receiver: <span th:text="${receiver.username}"></span></p>
+<p>Receiver: <a th:href="@{/profile/{userId}(userId=${receiver.id})}"><span th:text="${receiver.username}"></span></a></p>
 <p>Subject: <span th:text="${message.subject}"></span></p>
 <p>Text: <span th:text="${message.text}"></span></p>
 <p>Time: <span th:text="${message.time}"></span></p>

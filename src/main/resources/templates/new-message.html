@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>New message</title>
 </head>
 <body>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 <form id="messageForm" th:action="@{/mailbox/new-message}" th:object="${message}" method="post" enctype="multipart/form-data">
     <label>Author: <span th:text="${sender.username}" /></label><br>
     <label>Receiver: <input name="receiver" type="text" th:field="*{receiver}" required></label><br>

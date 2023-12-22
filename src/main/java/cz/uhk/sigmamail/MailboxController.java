@@ -4,6 +4,8 @@ import cz.uhk.sigmamail.model.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +23,15 @@ public class MailboxController {
     private final UserDAO userDAO;
     private Message_CategoryDAO message_categoryDAO;
     private MessageDAO messageDAO;
+    AttachmentDAO attachmentDAO;
 
 
-    public MailboxController(CategoryDAO categoryDAO, UserDAO userDAO,Message_CategoryDAO message_categoryDAO, MessageDAO messageDAO){
+    public MailboxController(CategoryDAO categoryDAO, UserDAO userDAO,Message_CategoryDAO message_categoryDAO, MessageDAO messageDAO, AttachmentDAO attachmentDAO){
         this.categoryDAO=categoryDAO;
         this.userDAO=userDAO;
         this.messageDAO=messageDAO;
         this.message_categoryDAO=message_categoryDAO;
+        this.attachmentDAO=attachmentDAO;
     }
 
     @PostMapping("/mailbox")
@@ -75,16 +79,21 @@ public class MailboxController {
         model.addAttribute("sender",sender);
         model.addAttribute("receiver", receiver);
         model.addAttribute("category", category);
-
-        return "message";
+        if (categoryId == 3){
+            return "concept-message";
+        } else {
+            return "message";
+        }
     }
 
     @GetMapping("/mailbox/new-message")
     public String getNewMessagePage(Model model){
         int userid=1;
+        User user = userDAO.getUserById(userid);
         User sender = userDAO.getUserById(userid);
         Message message = new Message();
 
+        model.addAttribute("user",user);
         model.addAttribute("message", message);
         model.addAttribute("sender", sender);
 
@@ -104,8 +113,12 @@ public class MailboxController {
 
         User receiver = userDAO.getUserByUserame(receiverUsername);
 
-        messageDAO.sendMessage(sender, receiver, subject, text, attachments);
-
+        if(attachments.getFirst().getSize() == 0)
+        {
+            messageDAO.sendMessage(sender, receiver, subject, text, null);
+        } else {
+            messageDAO.sendMessage(sender, receiver, subject, text, attachments);
+        }
         return "redirect:/mailbox";
     }
     @PostMapping("/mailbox/new-message/save")
@@ -121,8 +134,12 @@ public class MailboxController {
 
         User receiver = userDAO.getUserByUserame(receiverUsername);
 
-        messageDAO.saveMessage(sender, receiver, subject, text, attachments);
-
+        if(attachments.getFirst().getSize() == 0)
+        {
+            messageDAO.saveMessage(sender, receiver, subject, text, null);
+        } else {
+            messageDAO.saveMessage(sender, receiver, subject, text, attachments);
+        }
         return "redirect:/mailbox";
     }
 
@@ -183,4 +200,106 @@ public class MailboxController {
 
         return "redirect:/mailbox";
     }
+
+    @PostMapping("/mailbox/{messageId}/concept-message/send")
+    public String sendConceptMessage(@PathVariable int messageId, HttpServletRequest request){
+        int userid=1;
+        User sender = userDAO.getUserById(userid);
+        Message message = messageDAO.getMessageById(messageId);
+        Category category = categoryDAO.getCategoryById(3);
+        Message_Category message_category = message_categoryDAO.getDataByMessageAndCategory(message,category);
+        message_categoryDAO.deleteMessage_Category(message_category);
+        String receiverUsername = request.getParameter("receiver");
+        String subject = request.getParameter("subject");
+        String text = request.getParameter("text");
+        List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
+        List<Attachment> attachments = processAttachments(attachmentFiles);
+        List<Attachment> messageAttachments = message.getAttachments();
+        attachments.addAll(messageAttachments);
+
+        for(int i = 0;i < attachments.size();i++)
+        {
+            if (attachments.get(i).getSize() == 0)
+            {
+                attachments.remove(i);
+            }
+        }
+        User receiver = userDAO.getUserByUserame(receiverUsername);
+
+        if(attachments.getFirst().getSize() == 0)
+        {
+            messageDAO.sendMessage(sender, receiver, subject, text, null);
+        } else {
+            messageDAO.sendMessage(sender, receiver, subject, text, attachments);
+        }
+
+        return "redirect:/mailbox";
+    }
+
+    @PostMapping("/mailbox/{messageId}/concept-message/save")
+    public String saveConceptMessage(@PathVariable int messageId, HttpServletRequest request){
+        int userid=1;
+        User sender = userDAO.getUserById(userid);
+        Message message = messageDAO.getMessageById(messageId);
+
+        String receiverUsername = request.getParameter("receiver");
+        String subject = request.getParameter("subject");
+        String text = request.getParameter("text");
+        List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
+        List<Attachment> attachments = processAttachments(attachmentFiles);
+        User receiver = userDAO.getUserByUserame(receiverUsername);
+
+        List<Attachment> attachmentsToRemove = new ArrayList<>(message.getAttachments());
+        for(Attachment attachment:attachmentsToRemove)
+        {
+            Attachment newAttachment = new Attachment();
+            newAttachment.setType(attachment.getType());
+            newAttachment.setSize(attachment.getSize());
+            newAttachment.setName(attachment.getName());
+            newAttachment.setContent(attachment.getContent());
+            attachments.add(newAttachment);
+        }
+
+        for(int i = 0;i < attachments.size();i++)
+        {
+            if (attachments.get(i).getSize() == 0)
+            {
+                attachments.remove(i);
+            }
+        }
+        message.getAttachments().clear();
+        attachmentDAO.deleteAttachments(attachmentsToRemove);
+        messageDAO.deleteMessage(message);
+        if(attachments.isEmpty())
+        {
+            messageDAO.saveMessage(sender, receiver, subject, text, null);
+        } else {
+            messageDAO.saveMessage(sender, receiver, subject, text, attachments);
+        }
+
+        return "redirect:/mailbox";
+    }
+    @PostMapping("/mailbox/{messageId}/concept-message/{index}/delete")
+    public String deleteAttachment(@PathVariable int messageId, @PathVariable int index, Model model) {
+        int userid = 1;
+        User user = userDAO.getUserById(userid);
+        Message message = messageDAO.getMessageById(messageId);
+        Attachment attachment = message.getAttachments().get(index);
+        message.getAttachments().remove(index);
+        attachmentDAO.deleteAttachment(attachment);
+
+        User sender = message.getSender();
+        User receiver = message.getReceiver();
+        Category category = categoryDAO.getCategoryById(3);
+
+        model.addAttribute("user",user);
+        model.addAttribute("sender",sender);
+        model.addAttribute("receiver", receiver);
+        model.addAttribute("message", message);
+        model.addAttribute("category",category);
+
+        return "concept-message";
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package cz.uhk.sigmamail.model;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -28,6 +29,20 @@ public class AttachmentDAOImpl implements AttachmentDAO {
     @Override
     public Attachment getAttachmentById(int id) {
         return entityManager.find(Attachment.class, id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttachment(Attachment attachment) {
+        entityManager.remove(attachment);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttachments(List<Attachment> attachments) {
+        for(Attachment attachment : attachments){
+            entityManager.remove(attachment);
+        }
     }
 
 }

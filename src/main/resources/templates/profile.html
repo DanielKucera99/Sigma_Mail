@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${profile_owner.username}"></title>
+</head>
+<body>
+<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Username: <span th:text="${profile_owner.username}"></span></p>
+<p>First name: <span th:text="${profile_owner.first_name}"></span></p>
+<p>Last name: <span th:text="${profile_owner.last_name}"></span></p>
+<p>Birthdate: <span th:text="${profile_owner.birthdate}"></span></p>
+
+
+</body>
+</html>

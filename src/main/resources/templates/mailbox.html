@@ -5,7 +5,7 @@
     <title>Mailbox</title>
 </head>
 <body>
-<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 
 <ul>
     <li th:each="category : ${categories}">

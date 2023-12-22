@@ -32,7 +32,7 @@ public class Message {
     @Column(name = "text")
     private String text;
 
-    @OneToMany(mappedBy = "message")
+    @OneToMany(mappedBy = "message", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
 
 
@@ -118,13 +118,11 @@ public class Message {
     public String toString() {
         return "Message{" +
                 "id=" + id +
-                ", sender=" + sender +
-                ", receiver=" + receiver +
+                ", sender=" + (sender != null ? sender.getId() : null) + // Include sender's ID instead of the whole object
+                ", receiver=" + (receiver != null ? receiver.getId() : null) + // Include receiver's ID instead of the whole object
                 ", subject='" + subject + '\'' +
                 ", text='" + text + '\'' +
-                ", attachments=" + attachments +
                 ", time=" + time +
-                ", categories=" + categories +
                 '}';
     }
 }

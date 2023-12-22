@@ -85,12 +85,12 @@ public class Attachment {
 
     @Override
     public String toString() {
-        return "Attachment{" +
-                "id=" + id +
-                ", message=" + message +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", size=" + size +
-                '}';
+            return "Attachment{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", type='" + type + '\'' +
+                    ", size=" + size +
+                    '}';
+        }
+
     }
-}

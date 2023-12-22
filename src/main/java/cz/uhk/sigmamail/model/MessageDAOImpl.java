@@ -61,19 +61,23 @@ public class MessageDAOImpl implements MessageDAO{
         newMessage.setSubject(subject);
         newMessage.setText(text);
 
-        for (Attachment attachment : attachments) {
-            attachment.setMessage(newMessage);
-        }
 
-        newMessage.setAttachments(attachments);
+        if(attachments != null) {
+            for (Attachment attachment : attachments) {
+                attachment.setMessage(newMessage);
+            }
+
+            newMessage.setAttachments(attachments);
+        }
         newMessage.setTime(new Date());
 
         entityManager.persist(newMessage);
 
-        for (Attachment attachment : attachments) {
-            entityManager.persist(attachment);
+        if(attachments != null) {
+            for (Attachment attachment : attachments) {
+                entityManager.persist(attachment);
+            }
         }
-
         associateMessageWithCategory(newMessage, "Sent");
         associateMessageWithCategory(newMessage, "Received");
     }
@@ -87,17 +91,21 @@ public class MessageDAOImpl implements MessageDAO{
         newMessage.setSubject(subject);
         newMessage.setText(text);
 
-        for (Attachment attachment : attachments) {
-            attachment.setMessage(newMessage);
-        }
+        if(attachments != null) {
+            for (Attachment attachment : attachments) {
+                attachment.setMessage(newMessage);
+            }
 
-        newMessage.setAttachments(attachments);
+            newMessage.setAttachments(attachments);
+        }
         newMessage.setTime(new Date());
 
         entityManager.persist(newMessage);
 
-        for (Attachment attachment : attachments) {
-            entityManager.persist(attachment);
+        if(attachments != null) {
+            for (Attachment attachment : attachments) {
+                entityManager.persist(attachment);
+            }
         }
         associateMessageWithCategory(newMessage, "Concepts");
     }
