@@ -1,7 +1,6 @@
 package cz.uhk.sigmamail;
 
 import cz.uhk.sigmamail.model.AttachmentDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,7 +15,7 @@ import java.io.InputStream;
 @Controller
 public class AttachmentController {
 
-    private AttachmentDAO attachmentDAO;
+    private final AttachmentDAO attachmentDAO;
 
     public AttachmentController(AttachmentDAO attachmentDAO){
         this.attachmentDAO=attachmentDAO;

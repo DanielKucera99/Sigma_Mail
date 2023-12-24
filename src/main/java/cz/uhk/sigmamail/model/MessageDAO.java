@@ -4,12 +4,14 @@ import java.util.List;
 
 public interface MessageDAO {
 
-    public Message getMessageById(int id);
-    public List<Message> getAllMessages();
-   public List<Message> getAllMessagesBySenderInCategory(User sender, Category category);
-    public List<Message> getAllMessagesByReceiverInCategory(User receiver, Category category);
-    public void sendMessage(User sender, User receiver, String subject, String text, List<Attachment> attachments);
-    public void saveMessage(User sender, User receiver,String subject,String text,List<Attachment> attachments);
-    public void associateMessageWithCategory(Message message, String categoryName);
-    public void deleteMessage(Message message);
+    Message getMessageById(int id);
+    List<Message> getAllMessagesBySenderInCategory(User sender, Category category);
+    List<Message> getAllMessagesByReceiverInCategory(User receiver, Category category);
+    List<Message> getAllMessagesInTrash(User user);
+    void sendMessage(User sender, User receiver, String subject, String text, List<Attachment> attachments);
+    void saveMessage(User sender, User receiver,String subject,String text,List<Attachment> attachments);
+    void associateMessageWithCategory(Message message, String categoryName);
+    void associateMessageWithCategory(Message message, String categoryName, User user);
+    void deleteMessage(Message message);
+    void removeUser(User user);
 }

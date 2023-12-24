@@ -6,6 +6,10 @@
 </head>
 <body>
 <p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<form id="searchForm" th:if="${user.role == 'Admin'}" method="post" th:action="@{/search/{username}(username=${user.username})}">
+<Label>User search:<input id="searched_username" name="searched_username" type="text" placeholder="Search user"></Label>
+    <button type="submit" onclick="searchForm()">Search</button>
+</form>
 
 <ul>
     <li th:each="category : ${categories}">
@@ -16,5 +20,27 @@
 </ul>
 
     <a th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+<button onclick="goBack()">Go Back</button>
+<script>
+    function searchForm() {
+        let form = document.getElementById('searchForm');
+        let input = document.getElementById('searched_username');
+        if (input.value.trim() !== '') {
+            let username = encodeURIComponent(input.value);
+            form.action = `/search/${username}`;
+            form.submit();
+        } else {
+            alert('Please enter a username for search.');
+        }
+    }
+
+
+        function goBack() {
+        window.history.back();
+    }
+</script>
 </body>
 </html>

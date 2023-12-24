@@ -5,15 +5,12 @@
     <title>Sigma Mail</title>
 </head>
 <body>
-<h1>Login</h1>
-<form method="POST" th:action="@{/mailbox}" th:object="${user}">
-Username: <input th:field="*{username}" type="text" name="username" placeholder="Enter your username">
-    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: #fc0e0e;"></span>
-    <br><br>
-Password: <input th:field="*{password}" type="password" name="password" placeholder="Enter your password">
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: #fc0e0e;"></span>
-    <br><br>
-    <button type="submit">Login</button>
+
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<p th:if="${user.role == 'Admin'}">Don't have an account yet? Register <a th:href="@{/register}">here</a></p>
+<p> Go to <a th:href="@{/mailbox}">mailbox</a>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
 </form>
 </body>
 </html>

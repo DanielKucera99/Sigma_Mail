@@ -3,13 +3,13 @@ package cz.uhk.sigmamail;
 import cz.uhk.sigmamail.model.*;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -21,10 +21,9 @@ public class MailboxController {
 
     private final CategoryDAO categoryDAO;
     private final UserDAO userDAO;
-    private Message_CategoryDAO message_categoryDAO;
-    private MessageDAO messageDAO;
-    AttachmentDAO attachmentDAO;
-
+    private final Message_CategoryDAO message_categoryDAO;
+    private final MessageDAO messageDAO;
+    private final AttachmentDAO attachmentDAO;
 
     public MailboxController(CategoryDAO categoryDAO, UserDAO userDAO,Message_CategoryDAO message_categoryDAO, MessageDAO messageDAO, AttachmentDAO attachmentDAO){
         this.categoryDAO=categoryDAO;
@@ -34,10 +33,20 @@ public class MailboxController {
         this.attachmentDAO=attachmentDAO;
     }
 
+    public User getLoggedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        User user = new User();
+        if(principal instanceof CustomUserDetails){
+            CustomUserDetails loggedUser = (CustomUserDetails) principal;
+            user = userDAO.getUserByUserame(loggedUser.getUsername());
+        }
+        return user;
+    }
+
     @PostMapping("/mailbox")
     public String getMailbox(Model model){
-        int userid = 1;
-        User user = userDAO.getUserById(userid);
+        User user = getLoggedUser();
         List<Category> categories = categoryDAO.getAllCategories();
         model.addAttribute("user",user);
         model.addAttribute("categories", categories);
@@ -47,17 +56,21 @@ public class MailboxController {
 
     @GetMapping("/mailbox/{categoryId}")
     public String getCategoryPage(@PathVariable int categoryId, Model model){
-        int userid = 1;
-        User user = userDAO.getUserById(userid);
+        User user = getLoggedUser();
         List<Category> categories = categoryDAO.getAllCategories();
         Category category = categoryDAO.getCategoryById(categoryId);
         List<Message> messages;
 
         if(categoryId==2) {
             messages = messageDAO.getAllMessagesByReceiverInCategory(user,category);
-        } else {
+
+        } else if (categoryId==4) {
+            messages = messageDAO.getAllMessagesInTrash(user);
+        }
+        else {
             messages = messageDAO.getAllMessagesBySenderInCategory(user, category);
         }
+
         model.addAttribute("categories", categories);
         model.addAttribute("category", category);
         model.addAttribute("user",user);
@@ -68,15 +81,24 @@ public class MailboxController {
 
     @GetMapping("/mailbox/{categoryId}/{messageId}")
     public String getMessagePage(@PathVariable int categoryId,@PathVariable int messageId,Model model){
-        int userid=1;
-        User user = userDAO.getUserById(userid);
+        User user = getLoggedUser();
         Category category = categoryDAO.getCategoryById(categoryId);
         Message message = messageDAO.getMessageById(messageId);
-        User sender = userDAO.getUserById(message.getSender().getId());
-        User receiver = userDAO.getUserById(message.getReceiver().getId());
+        User sender = new User();
+        User receiver = new User();
+        if (message.getSender() != null) {
+            sender = userDAO.getUserById(message.getSender().getId());
+        } else {
+            sender.setUsername("deleted user");
+        }
+        if(message.getReceiver() != null) {
+            receiver = userDAO.getUserById(message.getReceiver().getId());
+        } else {
+            receiver.setUsername("deleted user");
+        }
         model.addAttribute("user", user);
         model.addAttribute("message", message);
-        model.addAttribute("sender",sender);
+        model.addAttribute("sender", sender);
         model.addAttribute("receiver", receiver);
         model.addAttribute("category", category);
         if (categoryId == 3){
@@ -88,9 +110,8 @@ public class MailboxController {
 
     @GetMapping("/mailbox/new-message")
     public String getNewMessagePage(Model model){
-        int userid=1;
-        User user = userDAO.getUserById(userid);
-        User sender = userDAO.getUserById(userid);
+        User user = getLoggedUser();
+        User sender = getLoggedUser();
         Message message = new Message();
 
         model.addAttribute("user",user);
@@ -102,8 +123,7 @@ public class MailboxController {
 
     @PostMapping("/mailbox/new-message/send")
     public String sendNewMessage(HttpServletRequest request){
-        int userid=1;
-        User sender = userDAO.getUserById(userid);
+        User sender = getLoggedUser();
 
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
@@ -123,8 +143,7 @@ public class MailboxController {
     }
     @PostMapping("/mailbox/new-message/save")
     public String saveNewMessage(HttpServletRequest request){
-        int userid=1;
-        User sender = userDAO.getUserById(userid);
+        User sender = getLoggedUser();
 
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
@@ -171,8 +190,7 @@ public class MailboxController {
 
     @GetMapping("/mailbox")
     public String getMailboxPage(Model model){
-        int userid = 1;
-        User user = userDAO.getUserById(userid);
+        User user = getLoggedUser();
         List<Category> categories = categoryDAO.getAllCategories();
         model.addAttribute("user",user);
         model.addAttribute("categories", categories);
@@ -181,12 +199,13 @@ public class MailboxController {
     }
 
     @PostMapping("/moveToTrash/{categoryId}/{messageId}")
-    public String moveMessageToTrash(@PathVariable int categoryId,@PathVariable int messageId){
+    public String moveMessageToTrash(@PathVariable int categoryId, @PathVariable int messageId) {
+        User user = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
         Category category = categoryDAO.getCategoryById(categoryId);
-        Message_Category currentMessage_Category = message_categoryDAO.getDataByMessageAndCategory(message,category);
+        Message_Category currentMessage_Category = message_categoryDAO.getDataByMessageAndCategory(message, category);
         message_categoryDAO.deleteMessage_Category(currentMessage_Category);
-        messageDAO.associateMessageWithCategory(message,"Trash");
+        messageDAO.associateMessageWithCategory(message, "Trash", user);
 
         return "redirect:/mailbox";
     }
@@ -203,8 +222,7 @@ public class MailboxController {
 
     @PostMapping("/mailbox/{messageId}/concept-message/send")
     public String sendConceptMessage(@PathVariable int messageId, HttpServletRequest request){
-        int userid=1;
-        User sender = userDAO.getUserById(userid);
+        User sender = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
         Category category = categoryDAO.getCategoryById(3);
         Message_Category message_category = message_categoryDAO.getDataByMessageAndCategory(message,category);
@@ -226,7 +244,7 @@ public class MailboxController {
         }
         User receiver = userDAO.getUserByUserame(receiverUsername);
 
-        if(attachments.getFirst().getSize() == 0)
+        if(attachments.isEmpty())
         {
             messageDAO.sendMessage(sender, receiver, subject, text, null);
         } else {
@@ -238,8 +256,7 @@ public class MailboxController {
 
     @PostMapping("/mailbox/{messageId}/concept-message/save")
     public String saveConceptMessage(@PathVariable int messageId, HttpServletRequest request){
-        int userid=1;
-        User sender = userDAO.getUserById(userid);
+        User sender = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
 
         String receiverUsername = request.getParameter("receiver");
@@ -281,8 +298,8 @@ public class MailboxController {
     }
     @PostMapping("/mailbox/{messageId}/concept-message/{index}/delete")
     public String deleteAttachment(@PathVariable int messageId, @PathVariable int index, Model model) {
-        int userid = 1;
-        User user = userDAO.getUserById(userid);
+
+        User user = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
         Attachment attachment = message.getAttachments().get(index);
         message.getAttachments().remove(index);
@@ -301,5 +318,6 @@ public class MailboxController {
         return "concept-message";
 
     }
+
 
 }

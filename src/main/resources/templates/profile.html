@@ -2,15 +2,44 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${profile_owner.username}"></title>
+    <title th:text="${profile_owner.username}">'s profile</title>
 </head>
 <body>
-<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 <p>Username: <span th:text="${profile_owner.username}"></span></p>
 <p>First name: <span th:text="${profile_owner.first_name}"></span></p>
 <p>Last name: <span th:text="${profile_owner.last_name}"></span></p>
-<p>Birthdate: <span th:text="${profile_owner.birthdate}"></span></p>
+<p>Birthdate: <span th:text="${formattedBirthdate}"></span></p>
+<p>Role: <span th:text="${profile_owner.role}"></span></p>
 
+<form method="post" th:action="@{/profile/{userId}/update(userId=${user.id})}">
+    <input type="hidden" th:field="*{user.id}">
+    <button type="submit" th:if="${user.id eq profile_owner.id}">Update profile</button>
+</form>
 
+<form method="post" th:action="@{/profile/{userId}/delete(userId=${profile_owner.id})}">
+    <input type="hidden" th:field="*{user.id}">
+    <button type="submit" th:if="${user.id eq profile_owner.id or user.role == 'Admin'}">Delete profile</button>
+</form>
+
+<form id="roleForm" method="post" th:action="@{/profile/{userId}/change-role(userId=${profile_owner.id})}" th:attr="data-owner-id=${profile_owner.id}">
+    <input type="hidden" th:field="*{user.id}">
+    <button type="submit" th:if="${user.role == 'Admin' and profile_owner.role == 'User'}" onclick="submitForm('toAdmin')">Set to admin</button>
+    <button type="submit" th:if="${user.role == 'Admin' and profile_owner.role == 'Admin'}" onclick="submitForm('toUser')">Set to user</button>
+</form>
+<button onclick="goBack()">Go Back</button>
+
+<script th:inline="javascript">
+    function submitForm(action) {
+        let form = document.getElementById('roleForm');
+        let ownerId = form.getAttribute('data-owner-id');
+        form.action = `/profile/${ownerId}/change-role/${action}`;
+
+        form.submit();
+    }
+        function goBack() {
+        window.history.back();
+    }
+</script>
 </body>
 </html>

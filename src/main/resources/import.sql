@@ -4,7 +4,7 @@ INSERT INTO user (username, first_name, last_name, birthdate, password, role) VA
 INSERT INTO user (username, first_name, last_name, birthdate, password, role) VALUES ('jiri.duben@sigma.com', 'Jiří', 'Duben', '2000-10-09', 'pass123', 'User');
 INSERT INTO user (username, first_name, last_name, birthdate, password, role) VALUES ('stanislav.kos@sigma.com', 'Stanislav', 'Kos', '1970-08-18', 'pass123', 'User');
 INSERT INTO user (username, first_name, last_name, birthdate, password, role) VALUES ('jan.ryba@sigma.com', 'Jan', 'Ryba', '1998-07-15', 'pass123', 'Admin');
-
+INSERT INTO user (username, first_name, last_name, birthdate, password, role) VALUES ('jan.jalovec5@sigma.com', 'Jan', 'Jalovec', '1990-04-24', 'Password123', 'User');
 Select * from sender;
 select * from receiver;
 select * from user;

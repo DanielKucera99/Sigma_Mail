@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public class UserDAOImpl implements UserDAO{
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Autowired
     public UserDAOImpl(EntityManager entityManager){
@@ -25,21 +25,8 @@ public class UserDAOImpl implements UserDAO{
 
     @Override
     @Transactional
-    public void saveUser(User user){
-        entityManager.persist(user);
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(int id) {
-        User user = entityManager.find(User.class, id);
+    public void deleteUser(User user) {
         entityManager.remove(user);
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        TypedQuery<User> query = entityManager.createQuery("FROM User", User.class);
-        return query.getResultList();
     }
 
     @Override
@@ -48,6 +35,21 @@ public class UserDAOImpl implements UserDAO{
         query.setParameter("username",username);
         return query.getSingleResult();
     }
+
+    @Override
+    @Transactional
+    public void updateUser(User user) {
+        entityManager.merge(user);
+    }
+
+    @Override
+    public List<User> getUsersByUsername(String username) {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.username LIKE :username", User.class);
+        query.setParameter("username", "%" + username + "%");
+
+        return query.getResultList();
+    }
+
 
 }
 

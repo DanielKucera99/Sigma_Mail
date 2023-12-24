@@ -2,7 +2,6 @@ package cz.uhk.sigmamail.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -18,11 +17,11 @@ public class Message {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "sender", nullable = false)
+    @JoinColumn(name = "sender")
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver", nullable = false)
+    @JoinColumn(name = "receiver")
     private User receiver;
 
     @Column(name = "subject")
@@ -104,14 +103,6 @@ public class Message {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
     }
 
     @Override

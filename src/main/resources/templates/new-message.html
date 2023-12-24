@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>New message</title>
@@ -18,15 +18,23 @@
     <button type="button" onclick="submitForm('send')">Send</button>
 </form>
 
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+<button onclick="goBack()">Go Back</button>
 <script th:inline="javascript">
     function submitForm(action) {
         let form = document.getElementById('messageForm');
         if (action === 'save') {
             form.action = "/mailbox/new-message/save";
         } else if (action === 'send') {
-            form.action ="/mailbox/new-message/send";
+            form.action = "/mailbox/new-message/send";
         }
         form.submit();
+    }
+
+        function goBack() {
+        window.history.back();
     }
 </script>
 </body>

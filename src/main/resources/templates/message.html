@@ -11,8 +11,18 @@
 </head>
 <body>
 <p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
-<p>Sender: <span th:text="${sender.username}"></span></p>
-<p>Receiver: <a th:href="@{/profile/{userId}(userId=${receiver.id})}"><span th:text="${receiver.username}"></span></a></p>
+<p>
+    Sender:
+    <a th:if="${sender.username != 'deleted user'}" th:href="@{/profile/{userId}(userId=${sender.id})}" th:text="${sender.username}"></a>
+    <span th:unless="${sender.username != 'deleted user'}" th:text="${sender.username}"></span>
+</p>
+
+<p>
+    Receiver:
+    <a th:if="${receiver.username != 'deleted user'}" th:href="@{/profile/{userId}(userId=${receiver.id})}" th:text="${receiver.username}"></a>
+    <span th:unless="${receiver.username != 'deleted user'}" th:text="${receiver.username}"></span>
+</p>
+
 <p>Subject: <span th:text="${message.subject}"></span></p>
 <p>Text: <span th:text="${message.text}"></span></p>
 <p>Time: <span th:text="${message.time}"></span></p>
@@ -32,6 +42,9 @@
     <input type="hidden" th:field="*{message.id}" />
     <input type="hidden" th:field="*{category.id}" />
     <button type="submit" th:if="${category.name == 'Trash'}">Delete</button>
+</form>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
 </form>
 <button onclick="goBack()">Go Back</button>
 </body>

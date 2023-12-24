@@ -5,7 +5,7 @@
     <title th:text="${category.name}"></title>
 </head>
 <body>
-<p>Logged user:<span th:text="${user.username}"></span></p>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 
 <ul>
     <li th:each="category : ${categories}">
@@ -25,7 +25,16 @@
     </li>
 </ul>
 
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
 
+<button onclick="goBack()">Go Back</button>
 
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 </body>
 </html>
