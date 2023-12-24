@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration successful</title>
+</head>
+<body>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<h1>Registration was successful!</h1>
+<span>Click <a th:href="@{/}">here</a> to return to the main page.</span>
+</body>
+</html>

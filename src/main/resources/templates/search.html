@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+</head>
+<body>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<form id="searchForm" method="post" th:action="@{/search/{username}(username=${user.username})}">
+    <Label th:if="${user.role == 'Admin'}">User search:<input id="searched_username" name="searched_username" type="text" placeholder="Search user"></Label>
+    <button type="submit" onclick="searchForm()">Search</button>
+</form>
+<h2>Found Users:</h2>
+<ul>
+    <li th:each="foundUser : ${foundUsers}">
+        <a th:href="@{/profile/{userId}(userId=${foundUser.id})}"><span th:text="${foundUser.username}"></span></a>
+    </li>
+</ul>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+<button onclick="goBack()">Go Back</button>
+<script>
+    function searchForm() {
+        let form = document.getElementById('searchForm');
+        let input = document.getElementById('searched_username');
+        if (input.value.trim() !== '') {
+            let username = encodeURIComponent(input.value);
+            form.action = `/search/${username}`;
+            form.submit();
+        } else {
+            alert('Please enter a username for search.');
+        }
+    }
+        function goBack() {
+        window.history.back();
+    }
+</script>
+</body>
+</html>

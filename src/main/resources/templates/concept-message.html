@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<form id="messageForm" th:action="@{/mailbox/{messageId}(messageId=${message.id})/concept-message}" th:object="${message}" th:attr="data-message-id=${message.id}" method="post" enctype="multipart/form-data">
+    <label>Author: <span th:text="${sender.username}" /></label><br>
+    <label>Receiver:  <a th:href="@{/profile/{userId}(userId=${receiver.id})}"><input name="receiver" type="text" th:value="${receiver.username}" required></a></label><br>
+    <label>Subject: <input name="subject" type="text" th:value="${message.subject}" th:field="*{subject}" required></label><br>
+    <label>Text: <textarea name="text" th:value="${message.text}" th:field="*{text}" required></textarea></label><br>
+    <label>Attachment: <input type="file" name="attachments" accept=".pdf, .doc, .docx, .txt, .gif, .jpg, .jpeg, .gif" multiple></label><br>
+
+    <label>Existing Attachments:</label>
+    <ul>
+        <li th:each="attachment, index : ${message.attachments}">
+            <span th:text="${attachment.name}"></span>
+
+            <button type="button"  th:attr="data-index=${index.index}" onclick="removeAttachment(this)">Remove</button>
+        </li>
+    </ul>
+
+    <button type="button" onclick="submitForm('save')">Save as a concept</button>
+
+    <button type="button" onclick="submitForm('send')">Send</button>
+</form>
+
+<form method="post" th:action="@{/moveToTrash/{categoryId}/{messageId}(categoryId=${category.id},messageId=${message.id})}">
+<input type="hidden" th:field="*{message.id}" />
+<input type="hidden" th:field="*{category.id}" />
+<button type="submit" th:if="${category.name != 'Trash'}">Move to trash</button>
+</form>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+<button onclick="goBack()">Go Back</button>
+<script th:inline="javascript">
+    function submitForm(action) {
+        let form = document.getElementById('messageForm');
+        let messageId = form.getAttribute('data-message-id');
+        if (action === 'save') {
+            form.action = `/mailbox/${messageId}/concept-message/save`;
+        } else if (action === 'send') {
+            form.action =`/mailbox/${messageId}/concept-message/send`;
+        }
+        form.submit();
+    }
+    function removeAttachment(button) {
+        let form = document.getElementById('messageForm');
+        let index = button.getAttribute('data-index');
+        let messageId = form.getAttribute('data-message-id');
+        form.action = `/mailbox/${messageId}/concept-message/${index}/delete`;
+
+        form.submit();
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
+</body>
+</html>

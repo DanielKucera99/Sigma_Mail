@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.username}">'s profile</title>
+</head>
+<body>
+<p>Logged user:<span th:text="${user.username}"></span></p>
+<form id="userForm" method="post" th:action="@{/profile/{userId}(userId=${user.id})/update}" th:object="${user}" th:attr="data-user-id=${user.id}">
+    <Label>Username: <input name="username" type="text" th:value="${user.username}" th:field="*{username}" required></Label><br>
+    <Label>First name: <input name="first_name" type="text" th:value="${user.first_name}" th:field="*{first_name}" required></Label>
+    <label>Last name: <input name="last_name" type="text" th:value="${user.last_name}" th:field="*{last_name}" required></label>
+    <Label>Birthdate: <input name="birthdate" type="date" th:value="${formattedBirthdate}" th:field="*{birthdate}" required></label>
+    <button type="submit" onclick="submitForm('save')">Save changes</button>
+    </form>
+<button type="button" onclick="submitForm('save')">Save</button>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<button onclick="goBack()">Go Back</button>
+<script th:inline="javascript">
+    function submitForm(action) {
+        let form = document.getElementById('userForm');
+        let userId = form.getAttribute('data-user-id');
+        form.action = `/profile/${userId}/update/${action}`;
+
+        form.submit();
+    }
+
+        function goBack() {
+        window.history.back();
+    }
+
+</script>
+</body>
+</html>
