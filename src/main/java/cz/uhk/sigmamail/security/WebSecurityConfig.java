@@ -1,6 +1,7 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.security;
 
 
+import cz.uhk.sigmamail.user.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

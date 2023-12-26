@@ -1,8 +1,9 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
+import cz.uhk.sigmamail.user.CustomUserDetails;
 import cz.uhk.sigmamail.model.User;
 import cz.uhk.sigmamail.model.UserDAO;
-import cz.uhk.sigmamail.model.UserRepository;
+import cz.uhk.sigmamail.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -60,6 +61,13 @@ public class RegistrationController {
 
         int errorValue;
         String username = request.getParameter("username");
+        if (userDAO.getUserByUserame(username) != null)
+        {
+            errorValue = 5;
+            model.addAttribute("errorValue", errorValue);
+            return "register";
+
+        }
         if(!username.matches("^[a-zA-Z0-9.]+$")) {
             errorValue = 1;
             model.addAttribute("errorValue", errorValue);
@@ -75,6 +83,11 @@ public class RegistrationController {
             return "register";
         }
         String birthdateString = request.getParameter("birthdate");
+        if(birthdateString.isEmpty()){
+            errorValue = 6;
+            model.addAttribute("errorValue", errorValue);
+            return "register";
+        }
         String password = request.getParameter("password");
         if (!password.matches(minLengthRegex) || !password.matches(".*" + capitalLetterRegex + ".*") || !password.matches(".*" + numberRegex + ".*")) {
             errorValue = 2;

@@ -1,4 +1,4 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.user;
 
 import cz.uhk.sigmamail.model.User;
 import org.springframework.security.core.GrantedAuthority;

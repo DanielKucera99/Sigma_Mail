@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${message.subject}"></title>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+
 </head>
 <body>
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="message-content">
 <p>
     Sender:
     <a th:if="${sender.username != 'deleted user'}" th:href="@{/profile/{userId}(userId=${sender.id})}" th:text="${sender.username}"></a>
@@ -43,9 +47,11 @@
     <input type="hidden" th:field="*{category.id}" />
     <button type="submit" th:if="${category.name == 'Trash'}">Delete</button>
 </form>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-<button onclick="goBack()">Go Back</button>
+</div>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

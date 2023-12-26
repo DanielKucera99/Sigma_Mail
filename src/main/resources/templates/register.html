@@ -3,37 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Registration</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="content-register">
 <form id="registerForm" th:action="@{/register}" method="post">
-     <span th:if="${errorValue == 1}" style="color: red">Username can contain only alphanumerical values!</span>
+     <span th:if="${errorValue == 1}" style="color: red">Username can contain only alphanumerical values!</span><br>
+    <span th:if="${errorValue == 5}" style="color: red">User with this username already exists!</span><br>
     <label>Username: <input name="username" type="text" required></label><span>@sigma.com</span><br>
-    <span th:if="${errorValue == 2}" style="color: red">Password have to be at least 8 characters long, contains a capital and a number!</span>
+    <span th:if="${errorValue == 2}" style="color: red">Password have to be at least 8 characters long, contains a capital and a number!</span><br>
     <label>Password: <input name="password" type="password" required/></label><br>
-    <span th:if="${errorValue == 3}" style="color: red">Password do not match!</span>
+    <span th:if="${errorValue == 3}" style="color: red">Password do not match!</span><br>
     <label>Password again: <input name="password_again" type="password" required/></label><br>
-    <span th:if="${errorValue == 4}" style="color: red">Names can contain only letters!</span>
-    <label>First name: <input name="first_name" type="text" required></label><br>
+    <span th:if="${errorValue == 4}" style="color: red">Names can contain only letters!</span><br>
+    <label>First name: <input name="first_name" type="text" required></label><br><br>
     <label>Last name: <input name="last_name" type="text" required></label><br>
+    <span th:if="${errorValue == 6}" style="color: red">No date was entered!</span><br>
     <label>Birthdate: <input name="birthdate" type="date" required min="1900-01-01" max="<!-- current date in the format yyyy-mm-dd -->" onfocus="(this.max = new Date().toISOString().split('T')[0])"></label><br>
-
-
 </form>
+
 <button type="button" onclick="submitForm('save')">Save</button>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-<button onclick="goBack()">Go Back</button>
+</div>
     <script th:inline="javascript">
         function submitForm(action) {
             let form = document.getElementById('registerForm');
             form.action = `/register/${action}`
             form.submit();
         }
-            function goBack() {
-            window.history.back();
-        }
 </script>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

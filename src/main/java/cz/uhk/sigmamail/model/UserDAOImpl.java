@@ -33,7 +33,13 @@ public class UserDAOImpl implements UserDAO{
     public User getUserByUserame(String username) {
         TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE username=:username", User.class);
         query.setParameter("username",username);
-        return query.getSingleResult();
+
+        List<User> resultList = query.getResultList();
+        if (!resultList.isEmpty()) {
+            return resultList.getFirst();
+        } else {
+            return null;
+        }
     }
 
     @Override

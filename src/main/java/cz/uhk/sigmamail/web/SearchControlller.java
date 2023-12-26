@@ -1,5 +1,6 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
+import cz.uhk.sigmamail.user.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;

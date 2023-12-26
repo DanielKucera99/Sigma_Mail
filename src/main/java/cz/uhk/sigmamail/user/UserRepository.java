@@ -1,5 +1,6 @@
-package cz.uhk.sigmamail.model;
+package cz.uhk.sigmamail.user;
 
+import cz.uhk.sigmamail.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

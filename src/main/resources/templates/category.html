@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${category.name}"></title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 
-<ul>
+<div class="menu">
+    <ul class="categories">
     <li th:each="category : ${categories}">
         <a th:href="@{/mailbox/{categoryId}(categoryId=${category.id})}">
             <span th:text="${category.name}"></span>
@@ -15,26 +23,22 @@
     </li>
 </ul>
 
-<a th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
+<a class="new-message" th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
 
-<ul>
+</div>
+<div class="messages-menu">
+<ul class="messages">
     <li th:each="message : ${messages}">
         <a th:href="@{/mailbox/{categoryId}/{messageId}(categoryId=${category.id},messageId=${message.id})}">
         <span th:text="${message.subject}"></span>
         </a>
     </li>
 </ul>
-
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<button onclick="goBack()">Go Back</button>
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
+</div>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

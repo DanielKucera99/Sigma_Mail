@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${profile_owner.username}">'s profile</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="profile-content">
 <p>Username: <span th:text="${profile_owner.username}"></span></p>
 <p>First name: <span th:text="${profile_owner.first_name}"></span></p>
 <p>Last name: <span th:text="${profile_owner.last_name}"></span></p>
 <p>Birthdate: <span th:text="${formattedBirthdate}"></span></p>
 <p>Role: <span th:text="${profile_owner.role}"></span></p>
-
 <form method="post" th:action="@{/profile/{userId}/update(userId=${user.id})}">
     <input type="hidden" th:field="*{user.id}">
     <button type="submit" th:if="${user.id eq profile_owner.id}">Update profile</button>
@@ -19,7 +26,7 @@
 
 <form method="post" th:action="@{/profile/{userId}/delete(userId=${profile_owner.id})}">
     <input type="hidden" th:field="*{user.id}">
-    <button type="submit" th:if="${user.id eq profile_owner.id or user.role == 'Admin'}">Delete profile</button>
+    <button class="delete-profile-button" type="submit" th:if="${user.id eq profile_owner.id or user.role == 'Admin'}">Delete profile</button>
 </form>
 
 <form id="roleForm" method="post" th:action="@{/profile/{userId}/change-role(userId=${profile_owner.id})}" th:attr="data-owner-id=${profile_owner.id}">
@@ -27,7 +34,7 @@
     <button type="submit" th:if="${user.role == 'Admin' and profile_owner.role == 'User'}" onclick="submitForm('toAdmin')">Set to admin</button>
     <button type="submit" th:if="${user.role == 'Admin' and profile_owner.role == 'Admin'}" onclick="submitForm('toUser')">Set to user</button>
 </form>
-<button onclick="goBack()">Go Back</button>
+</div>
 
 <script th:inline="javascript">
     function submitForm(action) {
@@ -37,9 +44,11 @@
 
         form.submit();
     }
-        function goBack() {
-        window.history.back();
-    }
 </script>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

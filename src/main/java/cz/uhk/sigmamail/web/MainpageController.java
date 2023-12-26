@@ -1,5 +1,6 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
+import cz.uhk.sigmamail.user.CustomUserDetails;
 import cz.uhk.sigmamail.model.User;
 import cz.uhk.sigmamail.model.UserDAO;
 import org.springframework.security.core.Authentication;

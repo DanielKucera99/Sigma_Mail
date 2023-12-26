@@ -27,8 +27,8 @@ public class Message {
     @Column(name = "subject")
     private String subject;
 
-    @Size(max = 512)
-    @Column(name = "text")
+
+    @Column(name = "text", length = 65535)
     private String text;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.REMOVE)

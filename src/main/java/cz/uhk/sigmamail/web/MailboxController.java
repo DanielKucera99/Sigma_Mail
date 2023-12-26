@@ -1,5 +1,6 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
+import cz.uhk.sigmamail.user.CustomUserDetails;
 import cz.uhk.sigmamail.model.*;
 
 import java.io.IOException;
@@ -122,12 +123,22 @@ public class MailboxController {
     }
 
     @PostMapping("/mailbox/new-message/send")
-    public String sendNewMessage(HttpServletRequest request){
+    public String sendNewMessage(HttpServletRequest request, Model model){
+
         User sender = getLoggedUser();
 
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
         String text = request.getParameter("text");
+        if(text.length() > 65535){
+            int errorValue = 1;
+            Message message = new Message();
+            model.addAttribute("errorValue", errorValue);
+            model.addAttribute("user", sender);
+            model.addAttribute("sender", sender);
+            model.addAttribute("message", message);
+            return "new-message";
+        }
         List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
         List<Attachment> attachments = processAttachments(attachmentFiles);
 
@@ -142,12 +153,21 @@ public class MailboxController {
         return "redirect:/mailbox";
     }
     @PostMapping("/mailbox/new-message/save")
-    public String saveNewMessage(HttpServletRequest request){
+    public String saveNewMessage(HttpServletRequest request, Model model){
         User sender = getLoggedUser();
 
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
         String text = request.getParameter("text");
+        if(text.length() > 65535){
+            int errorValue = 1;
+            Message message = new Message();
+            model.addAttribute("errorValue", errorValue);
+            model.addAttribute("user", sender);
+            model.addAttribute("sender", sender);
+            model.addAttribute("message", message);
+            return "new-message";
+        }
         List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
         List<Attachment> attachments = processAttachments(attachmentFiles);
 
@@ -221,7 +241,7 @@ public class MailboxController {
     }
 
     @PostMapping("/mailbox/{messageId}/concept-message/send")
-    public String sendConceptMessage(@PathVariable int messageId, HttpServletRequest request){
+    public String sendConceptMessage(@PathVariable int messageId, HttpServletRequest request, Model model){
         User sender = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
         Category category = categoryDAO.getCategoryById(3);
@@ -230,6 +250,15 @@ public class MailboxController {
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
         String text = request.getParameter("text");
+        if(text.length() > 65535){
+            int errorValue = 1;
+            model.addAttribute("errorValue", errorValue);
+            model.addAttribute("user", sender);
+            model.addAttribute("sender", sender);
+            model.addAttribute("message", message);
+            model.addAttribute("category", category);
+            return "concept-message";
+        }
         List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
         List<Attachment> attachments = processAttachments(attachmentFiles);
         List<Attachment> messageAttachments = message.getAttachments();
@@ -255,13 +284,23 @@ public class MailboxController {
     }
 
     @PostMapping("/mailbox/{messageId}/concept-message/save")
-    public String saveConceptMessage(@PathVariable int messageId, HttpServletRequest request){
+    public String saveConceptMessage(@PathVariable int messageId, HttpServletRequest request, Model model){
         User sender = getLoggedUser();
         Message message = messageDAO.getMessageById(messageId);
+        Category category = categoryDAO.getCategoryById(3);
 
         String receiverUsername = request.getParameter("receiver");
         String subject = request.getParameter("subject");
         String text = request.getParameter("text");
+        if(text.length() > 65535){
+            int errorValue = 1;
+            model.addAttribute("errorValue", errorValue);
+            model.addAttribute("user", sender);
+            model.addAttribute("sender", sender);
+            model.addAttribute("message", message);
+            model.addAttribute("category", category);
+            return "concept-message";
+        }
         List<MultipartFile> attachmentFiles = ((MultipartHttpServletRequest) request).getFiles("attachments");
         List<Attachment> attachments = processAttachments(attachmentFiles);
         User receiver = userDAO.getUserByUserame(receiverUsername);

@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Mailbox</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 <form id="searchForm" th:if="${user.role == 'Admin'}" method="post" th:action="@{/search/{username}(username=${user.username})}">
-<Label>User search:<input id="searched_username" name="searched_username" type="text" placeholder="Search user"></Label>
+<Label class="logged-user">User search:<input id="searched_username" name="searched_username" type="text" placeholder="Search user"></Label>
     <button type="submit" onclick="searchForm()">Search</button>
 </form>
-
-<ul>
+<div class="menu">
+<ul class="categories">
     <li th:each="category : ${categories}">
         <a th:href="@{/mailbox/{categoryId}(categoryId=${category.id})}">
         <span th:text="${category.name}"></span>
@@ -19,11 +26,8 @@
     </li>
 </ul>
 
-    <a th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-<button onclick="goBack()">Go Back</button>
+    <a class="new-message" th:href="@{/mailbox/new-message}"><button>Create new message</button></a>
+</div>
 <script>
     function searchForm() {
         let form = document.getElementById('searchForm');
@@ -36,11 +40,11 @@
             alert('Please enter a username for search.');
         }
     }
-
-
-        function goBack() {
-        window.history.back();
-    }
 </script>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

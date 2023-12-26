@@ -1,4 +1,4 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
 import cz.uhk.sigmamail.model.AttachmentDAO;
 import org.springframework.core.io.InputStreamResource;

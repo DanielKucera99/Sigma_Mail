@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Sigma Mail</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
+<div class="header">
+    <h1><a th:href="@{/}">Sigma mail</a></h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
 
-<p>Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
-<p th:if="${user.role == 'Admin'}">Don't have an account yet? Register <a th:href="@{/register}">here</a></p>
-<p> Go to <a th:href="@{/mailbox}">mailbox</a>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+<p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
+<div class="content">
+<p th:if="${user.role == 'Admin'}" class="admin-link"> Register a user <a th:href="@{/register}">here</a></p>
+    <p> Go to <a th:href="@{/mailbox}" class="mailbox-link" >mailbox</a></p>
+</div>
 </body>
+<footer class="footer">
+    <div class="footer-div">
+        <span>PPRO student project, Daniel Kučera , 2023</span>
+    </div>
+</footer>
 </html>

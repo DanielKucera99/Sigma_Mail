@@ -1,5 +1,6 @@
-package cz.uhk.sigmamail;
+package cz.uhk.sigmamail.web;
 
+import cz.uhk.sigmamail.user.CustomUserDetails;
 import cz.uhk.sigmamail.model.MessageDAO;
 import cz.uhk.sigmamail.model.User;
 import jakarta.servlet.http.HttpServletRequest;
