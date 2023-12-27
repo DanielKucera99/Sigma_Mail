@@ -28,6 +28,10 @@
     <input type="hidden" th:field="*{user.id}">
     <button class="delete-profile-button" type="submit" th:if="${user.id eq profile_owner.id or user.role == 'Admin'}">Delete profile</button>
 </form>
+    <form method="post" th:action="@{/profile/{userId}/change-password(userId=${user.id})}">
+        <input type="hidden" th:field="*{user.id}">
+        <button type="submit" th:if="${user.id eq profile_owner.id}">Change password</button>
+    </form>
 
 <form id="roleForm" method="post" th:action="@{/profile/{userId}/change-role(userId=${profile_owner.id})}" th:attr="data-owner-id=${profile_owner.id}">
     <input type="hidden" th:field="*{user.id}">

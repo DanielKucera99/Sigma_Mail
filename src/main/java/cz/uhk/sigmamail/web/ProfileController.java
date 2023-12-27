@@ -6,6 +6,7 @@ import cz.uhk.sigmamail.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import cz.uhk.sigmamail.model.UserDAO;
 import org.springframework.stereotype.Controller;
@@ -79,7 +80,6 @@ public class ProfileController {
         user.setUsername(username);
         user.setFirst_name(first_name);
         user.setLast_name(last_name);
-        user.setPassword("Password123");
         userDAO.updateUser(user);
 
         model.addAttribute("user",user);
@@ -125,4 +125,47 @@ public class ProfileController {
 
         return "profile";
     }
+
+    @PostMapping("/profile/{userId}/change-password")
+    public String getPasswordChangePage(@PathVariable int userId, Model model){
+        User user = userDAO.getUserById(userId);
+        model.addAttribute("user",user);
+
+        return "change-password";
+    }
+    @PostMapping("/profile/{userId}/change-password/save")
+    public String savePasswordChange(@PathVariable int userId, HttpServletRequest request, Model model){
+        User user = userDAO.getUserById(userId);
+        int errorValue;
+        model.addAttribute("user",user);
+        String minLengthRegex = ".{8,}";
+        String capitalLetterRegex = "[A-Z]";
+        String numberRegex = "\\d";
+        String new_password = request.getParameter("new_password");
+
+        if (!new_password.matches(minLengthRegex) || !new_password.matches(".*" + capitalLetterRegex + ".*") || !new_password.matches(".*" + numberRegex + ".*")) {
+            errorValue = 2;
+            model.addAttribute("errorValue", errorValue);
+            return "change-password";
+        }
+
+        String confirm_new_password = request.getParameter("confirm_new_password");
+        if(!confirm_new_password.equals(new_password)){
+            errorValue = 3;
+            model.addAttribute("errorValue", errorValue);
+            return "change-password";
+        }
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encoded_new_password = bCryptPasswordEncoder.encode(new_password);
+
+        user.setPassword(encoded_new_password);
+        userDAO.updateUser(user);
+
+
+        model.addAttribute("profile_owner", user);
+        model.addAttribute("formattedBirthdate", new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthdate()));
+
+        return "profile";
+    }
+
 }

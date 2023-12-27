@@ -20,7 +20,7 @@
     <label>Username: <input name="username" type="text" required></label><span>@sigma.com</span><br>
     <span th:if="${errorValue == 2}" style="color: red">Password have to be at least 8 characters long, contains a capital and a number!</span><br>
     <label>Password: <input name="password" type="password" required/></label><br>
-    <span th:if="${errorValue == 3}" style="color: red">Password do not match!</span><br>
+    <span th:if="${errorValue == 3}" style="color: red">Passwords do not match!</span><br>
     <label>Password again: <input name="password_again" type="password" required/></label><br>
     <span th:if="${errorValue == 4}" style="color: red">Names can contain only letters!</span><br>
     <label>First name: <input name="first_name" type="text" required></label><br><br>
