@@ -30,7 +30,7 @@ public class Attachment {
     private int size;
 
     @Lob
-    @Column(name = "content", columnDefinition = "BLOB")
+    @Column(name = "content", columnDefinition = "LONGBLOB")
     private byte[] content;
 
     // other getters and setters...

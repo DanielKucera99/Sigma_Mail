@@ -62,7 +62,7 @@ public class MailboxController {
         Category category = categoryDAO.getCategoryById(categoryId);
         List<Message> messages;
 
-        if(categoryId==2) {
+        if(categoryId==1) {
             messages = messageDAO.getAllMessagesByReceiverInCategory(user,category);
 
         } else if (categoryId==4) {

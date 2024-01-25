@@ -108,14 +108,12 @@ public class RegistrationController {
 
         try {
             Date birthdate = simpleDateFormat.parse(birthdateString);
-            System.out.println("date: " + birthdate);
             newUser.setBirthdate(birthdate);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
 
-        System.out.println("Password: " + encodedPassword);
         newUser.setUsername(username);
         newUser.setFirst_name(first_name);
         newUser.setLast_name(last_name);

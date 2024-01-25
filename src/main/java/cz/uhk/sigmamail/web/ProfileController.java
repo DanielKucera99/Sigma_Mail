@@ -11,10 +11,12 @@ import org.springframework.ui.Model;
 import cz.uhk.sigmamail.model.UserDAO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 
 @Controller
 public class ProfileController {
@@ -71,31 +73,35 @@ public class ProfileController {
 
         try {
             Date birthdate = simpleDateFormat.parse(birthdateString);
-            System.out.println("date: " + birthdate);
             user.setBirthdate(birthdate);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
-        user.setUsername(username);
         user.setFirst_name(first_name);
         user.setLast_name(last_name);
         userDAO.updateUser(user);
 
+
         model.addAttribute("user",user);
         model.addAttribute("profile_owner", user);
         model.addAttribute("formattedBirthdate", new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthdate()));
-
         return "profile";
     }
 
     @PostMapping("profile/{userId}/delete")
-    public String deleteProfile(@PathVariable int userId, Model model){
+    public String deleteProfile(@PathVariable int userId, Model model, HttpServletRequest request){
+        User loggedUser = getLoggedUser();
         User user = userDAO.getUserById(userId);
         messageDAO.removeUser(user);
         userDAO.deleteUser(user);
 
-        model.addAttribute("user", new User());
+        if(user.getId() == loggedUser.getId()) {
+            request.getSession().invalidate();
+            SecurityContextHolder.clearContext();
+            return "redirect:/login?logout";
+        }
+        model.addAttribute("user", loggedUser);
         return "index";
     }
 

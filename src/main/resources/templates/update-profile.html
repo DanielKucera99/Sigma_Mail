@@ -15,7 +15,6 @@
 <p class="logged-user">Logged user:<a th:href="@{/profile/{userId}(userId=${user.id})}"><span th:text="${user.username}"></span></a></p>
 <div class="profile-content">
 <form id="userForm" method="post" th:action="@{/profile/{userId}(userId=${user.id})/update}" th:object="${user}" th:attr="data-user-id=${user.id}">
-    <Label>Username: <input name="username" type="text" th:value="${user.username}" th:field="*{username}" required></Label><br><br>
     <Label>First name: <input name="first_name" type="text" th:value="${user.first_name}" th:field="*{first_name}" required></Label><br><br>
     <label>Last name: <input name="last_name" type="text" th:value="${user.last_name}" th:field="*{last_name}" required></label><br><br>
     <Label>Birthdate: <input name="birthdate" type="date" th:value="${formattedBirthdate}" th:field="*{birthdate}" required></label><br><br>
